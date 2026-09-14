@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buket Bunga & Pesan Untukmu 🩵</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #0284c7;
+      --secondary-color: #0369a1;
+      --accent-color: #38bdf8;
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+      --card-bg: rgba(255, 255, 255, 0.94);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Canvas Partikel Bunga Biru */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 440px;
+      z-index: 10;
+      margin: 20px 0;
+    }
+
+    /* Phase 1: Amplop Pembuka */
+    #envelopeCard {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 40px 25px;
+      border-radius: 28px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(2, 132, 199, 0.15);
+      border: 2px solid #ffffff;
+    }
+
+    .envelope-btn {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 42px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+      animation: pulse 1.8s infinite ease-in-out;
+      transition: transform 0.2s ease;
+    }
+
+    .envelope-btn:active {
+      transform: scale(0.92);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Phase 2: Kartu Utama */
+    #mainCard {
+      display: none;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 26px 20px;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(2, 132, 199, 0.18);
+      border: 2px solid #ffffff;
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Styling Frame Foto Spesial */
+    .photo-frame {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 15px auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #ffffff;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
+      animation: pulseFrame 2.5s infinite ease-in-out;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    @keyframes pulseFrame {
+      0%, 100% { transform: scale(1); box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.5); }
+    }
+
+    .title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 32px;
+      color: var(--secondary-color);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .typewriter-box {
+      background: rgba(240, 249, 255, 0.95);
+      padding: 16px;
+      border-radius: 18px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #0f172a;
+      min-height: 95px;
+      border-left: 4px solid var(--primary-color);
+      margin-bottom: 18px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .section-hint {
+      font-size: 11.5px;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* 3D Flip Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .flip-card {
+      height: 90px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
+      border-radius: 16px;
+    }
+
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .card-front {
+      background: #ffffff;
+      color: #0369a1;
+      border: 1px solid #e0f2fe;
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: white;
+      transform: rotateY(180deg);
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    /* Buket Bunga Biru Interaktif */
+    .bouquet-box {
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 20px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .bouquet-carousel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .nav-arrow {
+      background: #0284c7;
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .nav-arrow:hover {
+      background: #0369a1;
+    }
+
+    .flower-display {
+      flex-grow: 1;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flower-icon {
+      font-size: 40px;
+      margin-bottom: 4px;
+      animation: float 2.5s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .flower-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+
+    .flower-meaning {
+      font-size: 11.5px;
+      color: #334155;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .dots-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: background 0.3s;
+    }
+
+    .dot.active {
+      background: #0284c7;
+      width: 18px;
+      border-radius: 10px;
+    }
+
+    /* Video Section */
+    .video-section {
+      margin-bottom: 20px;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      border: 2px solid #bae6fd;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Spotify Button */
+    .spotify-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #1db954;
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+    }
+
+    .spotify-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Slider Interaktif */
+    .slider-box {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 16px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #e2e8f0;
+      outline: none;
+      accent-color: #0284c7;
+      cursor: pointer;
+    }
+
+    .status-text {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0284c7;
+    }
+
+    .reward-btn {
+      display: none;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px;
+      background: linear-gradient(45deg, #0284c7, #38bdf8);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+      text-decoration: none;
+      text-align: center;
+      animation: popIn 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="container">
+    <!-- Phase 1: Pembuka Amplop -->
+    <div id="envelopeCard">
+      <div class="envelope-btn" onclick="openLetter()">💌</div>
+      <h2 style="margin-top: 18px; color: #0369a1; font-size: 19px; font-weight: 700;">Surat & Bunga Biru</h2>
+      <p style="color: #64748b; font-size: 13px; margin-top: 6px;">Klik amplop untuk membuka pesan</p>
+    </div>
+
+    <!-- Phase 2: Isi Lengkap -->
+    <div id="mainCard">
+      <!-- Foto Pasangan -->
+      <div class="photo-frame">
+        <img src="foto.jpg" alt="Foto Sayang">
+      </div>
+
+      <h1 class="title">Maafin Abang Ya? 🩵</h1>
+      
+      <!-- Typewriter Message -->
+      <div class="typewriter-box">
+        <span id="typewriter"></span>
+      </div>
+
+      <!-- Flip Cards (Janji & Alasan) -->
+      <p class="section-hint">👇 Sentuh kartu untuk melihat isi hati abang</p>
+      <div class="cards-grid">
+        <div class="flip-card" onclick="flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="card-front">
+              <span style="font-size:20px; margin-bottom:4px;">🤐</span>
+              <span>Alasan Diam</span>
+            </div>
+            <div class="card-back">
+              Abang bingung nyusun kata biar ga bikin kamu tambah bete..
+            </div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="card-front">
+              <span style="font-size:20px; margin-bottom:4px;">🤝</span>
+              <span>Janji Abang</span>
+            </div>
+            <div class="card-back">
+              Engga bakal diulangi lagi dan belajar terbuka sama kamu!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buket Bunga Biru Interaktif -->
+      <p class="section-hint">💐 Buket Bunga Biru Untukmu (Geser Kiri/Kanan):</p>
+      <div class="bouquet-box">
+        <div class="bouquet-carousel">
+          <button class="nav-arrow" onclick="prevFlower()">❮</button>
+          <div class="flower-display">
+            <div class="flower-icon" id="flowerIcon">🪻</div>
+            <div class="flower-name" id="flowerName">Hortensia Biru</div>
+            <div class="flower-meaning" id="flowerMeaning">Simbol permohonan maaf yang tulus dan rasa terima kasih atas kebaikan hatimu.</div>
+          </div>
+          <button class="nav-arrow" onclick="nextFlower()">❯</button>
+        </div>
+        <div class="dots-indicator" id="dotsContainer"></div>
+      </div>
+
+      <!-- Video Kartun Hello Jadoo -->
+      <div class="video-section">
+        <p class="section-hint">📺 Tonton Hello Jadoo dulu biar ga cemberut:</p>
+        <div class="video-container">
+          <iframe 
+            src="https://www.youtube.com/embed/videoseries?list=PLZ1-JvU63Z66oJqW889wI_-Z-K9L7xN1g" 
+            title="Hello Jadoo Episode Lucu" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Tombol Spotify Lagu Celine Dion -->
+      <a href="https://open.spotify.com/search/To%20Love%20You%20More%20Celine%20Dion" target="_blank" class="spotify-btn">
+        🎵 Putar "To Love You More" - Celine Dion
+      </a>
+
+      <!-- Slider Tingkat Maaf -->
+      <div class="slider-box">
+        <span class="slider-label">Tingkat Kesediaan Maaf: <b id="percentVal">0%</b></span>
+        <input type="range" id="forgiveSlider" min="0" max="100" value="0" oninput="onSliderChange(this.value)">
+        <div class="status-text" id="statusMsg">Masih ngambek 🥺</div>
+      </div>
+
+      <!-- Tombol Hadiah Spesial TikTok -->
+      <a id="rewardBtn" class="reward-btn" href="https://vt.tiktok.com/ZSqAgrBby/" target="_blank">Lihat Pesan Spesial 🎬✨</a>
+    </div>
+  </div>
+
+  <script>
+    // Audio Synthesizer
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playChime(freq = 523.25, duration = 0.3) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { console.log(e); }
+    }
+
+    // Canvas Background Particles
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const blueEmojis = ['🪻', '🔹', '💙', '🩵', '✨', '🫧'];
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = -30;
+        this.size = Math.random() * 14 + 14;
+        this.speedY = Math.random() * 1.2 + 0.8;
+        this.speedX = Math.random() * 0.8 - 0.4;
+        this.emoji = blueEmojis[Math.floor(Math.random() * blueEmojis.length)];
+        this.opacity = Math.random() * 0.7 + 0.3;
+        this.rotation = Math.random() * 360;
+        this.rotSpeed = Math.random() * 2 - 1;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.rotation += this.rotSpeed;
+        if (this.y > height + 30) this.reset();
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.font = `${this.size}px serif`;
+        ctx.fillText(this.emoji, -this.size / 2, this.size / 2);
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 22; i++) particles.push(new Particle());
+
+    function renderParticles() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(renderParticles);
+    }
+    renderParticles();
+
+    // Typewriter
+    const messageText = "Halo sayang... Abang minta maaf ya atas sikap abang kemarin. Abang sadar kalau cuma diam itu bikin kamu makin kesel. Abang bingung nyusun kata pas lagi emosi, tapi abang nyesel banget. Maafin abang yaa? (⁠╥⁠﹏⁠╥⁠)";
+    let typeIndex = 0;
+
+    function typeWriter() {
+      if (typeIndex < messageText.length) {
+        document.getElementById("typewriter").innerHTML += messageText.charAt(typeIndex);
+        typeIndex++;
+        setTimeout(typeWriter, 32);
+      }
+    }
+
+    // Data 4 Bunga Biru & Maknanya
+    const blueFlowers = [
+      {
+        icon: "🪻",
+        name: "Hortensia Biru (Blue Hydrangea)",
+        meaning: "Simbol permohonan maaf yang tulus, penyesalan mendalam, dan rasa terima kasih atas kebaikan hatimu."
+      },
+      {
+        icon: "🔹",
+        name: "Forget-Me-Not",
+        meaning: "Simbol kenangan indah kita dan janji bahwa rasa sayang abang ga akan pernah lupa/pudar."
+      },
+      {
+        icon: "🌹",
+        name: "Mawar Biru (Blue Rose)",
+        meaning: "Simbol keajaiban dan keunikan — mewakili indahnya hubungan kita yang sangat berharga."
+      },
+      {
+        icon: "🪷",
+        name: "Anggrek Biru (Blue Orchid)",
+        meaning: "Simbol ketulusan, keindahan yang langka, dan kasih sayang abang yang mendalam untukmu."
+      }
+    ];
+
+    let currentFlowerIdx = 0;
+
+    function renderDots() {
+      const dotsContainer = document.getElementById('dotsContainer');
+      dotsContainer.innerHTML = '';
+      blueFlowers.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `dot ${idx === currentFlowerIdx ? 'active' : ''}`;
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function updateFlowerDisplay() {
+      const flower = blueFlowers[currentFlowerIdx];
+      document.getElementById('flowerIcon').innerText = flower.icon;
+      document.getElementById('flowerName').innerText = flower.name;
+      document.getElementById('flowerMeaning').innerText = flower.meaning;
+      renderDots();
+    }
+
+    function nextFlower() {
+      initAudio();
+      playChime(659.25, 0.15);
+      currentFlowerIdx = (currentFlowerIdx + 1) % blueFlowers.length;
+      updateFlowerDisplay();
+    }
+
+    function prevFlower() {
+      initAudio();
+      playChime(587.33, 0.15);
+      currentFlowerIdx = (currentFlowerIdx - 1 + blueFlowers.length) % blueFlowers.length;
+      updateFlowerDisplay();
+    }
+
+    // Interactive Handlers
+    function openLetter() {
+      initAudio();
+      playChime(523.25, 0.4);
+      setTimeout(() => playChime(659.25, 0.5), 150);
+      setTimeout(() => playChime(783.99, 0.6), 300);
+
+      document.getElementById('envelopeCard').style.display = 'none';
+      document.getElementById('mainCard').style.display = 'block';
+      typeWriter();
+      renderDots();
+    }
+
+    function flipCard(cardEl) {
+      initAudio();
+      playChime(880, 0.15);
+      cardEl.classList.toggle('flipped');
+    }
+
+    function onSliderChange(val) {
+      document.getElementById('percentVal').innerText = val + '%';
+      const statusMsg = document.getElementById('statusMsg');
+      const rewardBtn = document.getElementById('rewardBtn');
+
+      if (val < 35) {
+        statusMsg.innerText = "Masih ngambek 🥺";
+        rewardBtn.style.display = "none";
+      } else if (val < 75) {
+        statusMsg.innerText = "Mulai luluh nih... 🤏";
+        rewardBtn.style.display = "none";
+      } else if (val < 100) {
+        statusMsg.innerText = "Dikit lagi dimaafin! 🥰";
+        rewardBtn.style.display = "none";
+      } else {
+        statusMsg.innerText = "HOREEE DIMAAFIN! 🥳🎉";
+        if (rewardBtn.style.display !== "block") {
+          initAudio();
+          playChime(1046.5, 0.8);
+          rewardBtn.style.display = "block";
+          for (let i = 0; i < 12; i++) particles.push(new Particle());
+        }
+      }
+    }
+  </script>
+</body>
+</html>
