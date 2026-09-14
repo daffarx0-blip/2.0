@@ -33,7 +33,6 @@
       position: relative;
     }
 
-    /* Canvas Partikel Bunga Biru */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -51,7 +50,6 @@
       margin: 20px 0;
     }
 
-    /* Phase 1: Amplop Pembuka */
     #envelopeCard {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -88,7 +86,6 @@
       50% { transform: scale(1.08); }
     }
 
-    /* Phase 2: Kartu Utama */
     #mainCard {
       display: none;
       background: var(--card-bg);
@@ -106,7 +103,6 @@
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    /* Styling Frame Foto Spesial */
     .photo-frame {
       width: 120px;
       height: 120px;
@@ -116,6 +112,7 @@
       border: 4px solid #ffffff;
       box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
       animation: pulseFrame 2.5s infinite ease-in-out;
+      background-color: #e0f2fe;
     }
 
     .photo-frame img {
@@ -159,7 +156,6 @@
       font-weight: 600;
     }
 
-    /* 3D Flip Cards */
     .cards-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -219,7 +215,6 @@
       line-height: 1.4;
     }
 
-    /* Buket Bunga Biru Interaktif */
     .bouquet-box {
       background: #f0f9ff;
       border: 1.5px solid #bae6fd;
@@ -311,7 +306,6 @@
       border-radius: 10px;
     }
 
-    /* Video Section */
     .video-section {
       margin-bottom: 20px;
     }
@@ -335,7 +329,6 @@
       border: 0;
     }
 
-    /* Spotify Button */
     .spotify-btn {
       display: flex;
       align-items: center;
@@ -357,7 +350,6 @@
       transform: scale(0.97);
     }
 
-    /* Slider Interaktif */
     .slider-box {
       background: rgba(255, 255, 255, 0.8);
       padding: 16px;
@@ -414,28 +406,24 @@
   <canvas id="bgCanvas"></canvas>
 
   <div class="container">
-    <!-- Phase 1: Pembuka Amplop -->
     <div id="envelopeCard">
       <div class="envelope-btn" onclick="openLetter()">💌</div>
       <h2 style="margin-top: 18px; color: #0369a1; font-size: 19px; font-weight: 700;">Surat & Bunga Biru</h2>
       <p style="color: #64748b; font-size: 13px; margin-top: 6px;">Klik amplop untuk membuka pesan</p>
     </div>
 
-    <!-- Phase 2: Isi Lengkap -->
     <div id="mainCard">
-      <!-- Foto Pasangan -->
+      <!-- Frame Foto (Dengan Sistem Fallback Anti Broken) -->
       <div class="photo-frame">
-        <img src="foto.jpg" alt="Foto Sayang">
+        <img src="foto.jpg" alt="Foto Sayang" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Jadoo';">
       </div>
 
       <h1 class="title">Maafin Abang Ya? 🩵</h1>
       
-      <!-- Typewriter Message -->
       <div class="typewriter-box">
         <span id="typewriter"></span>
       </div>
 
-      <!-- Flip Cards (Janji & Alasan) -->
       <p class="section-hint">👇 Sentuh kartu untuk melihat isi hati abang</p>
       <div class="cards-grid">
         <div class="flip-card" onclick="flipCard(this)">
@@ -462,7 +450,6 @@
         </div>
       </div>
 
-      <!-- Buket Bunga Biru Interaktif -->
       <p class="section-hint">💐 Buket Bunga Biru Untukmu (Geser Kiri/Kanan):</p>
       <div class="bouquet-box">
         <div class="bouquet-carousel">
@@ -477,12 +464,12 @@
         <div class="dots-indicator" id="dotsContainer"></div>
       </div>
 
-      <!-- Video Kartun Hello Jadoo -->
+      <!-- Video Section (Link YouTube Diperbarui) -->
       <div class="video-section">
         <p class="section-hint">📺 Tonton Hello Jadoo dulu biar ga cemberut:</p>
         <div class="video-container">
           <iframe 
-            src="https://www.youtube.com/embed/videoseries?list=PLZ1-JvU63Z66oJqW889wI_-Z-K9L7xN1g" 
+            src="https://www.youtube.com/embed/5aL6x1_oXz8" 
             title="Hello Jadoo Episode Lucu" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
@@ -490,25 +477,21 @@
         </div>
       </div>
 
-      <!-- Tombol Spotify Lagu Celine Dion -->
       <a href="https://open.spotify.com/search/To%20Love%20You%20More%20Celine%20Dion" target="_blank" class="spotify-btn">
         🎵 Putar "To Love You More" - Celine Dion
       </a>
 
-      <!-- Slider Tingkat Maaf -->
       <div class="slider-box">
         <span class="slider-label">Tingkat Kesediaan Maaf: <b id="percentVal">0%</b></span>
         <input type="range" id="forgiveSlider" min="0" max="100" value="0" oninput="onSliderChange(this.value)">
         <div class="status-text" id="statusMsg">Masih ngambek 🥺</div>
       </div>
 
-      <!-- Tombol Hadiah Spesial TikTok -->
       <a id="rewardBtn" class="reward-btn" href="https://vt.tiktok.com/ZSqAgrBby/" target="_blank">Lihat Pesan Spesial 🎬✨</a>
     </div>
   </div>
 
   <script>
-    // Audio Synthesizer
     let audioCtx = null;
 
     function initAudio() {
@@ -533,7 +516,6 @@
       } catch (e) { console.log(e); }
     }
 
-    // Canvas Background Particles
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -586,7 +568,6 @@
     }
     renderParticles();
 
-    // Typewriter
     const messageText = "Halo sayang... Abang minta maaf ya atas sikap abang kemarin. Abang sadar kalau cuma diam itu bikin kamu makin kesel. Abang bingung nyusun kata pas lagi emosi, tapi abang nyesel banget. Maafin abang yaa? (⁠╥⁠﹏⁠╥⁠)";
     let typeIndex = 0;
 
@@ -598,7 +579,6 @@
       }
     }
 
-    // Data 4 Bunga Biru & Maknanya
     const blueFlowers = [
       {
         icon: "🪻",
@@ -656,7 +636,6 @@
       updateFlowerDisplay();
     }
 
-    // Interactive Handlers
     function openLetter() {
       initAudio();
       playChime(523.25, 0.4);
